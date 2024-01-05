@@ -15,7 +15,6 @@ import kotlinx.coroutines.launch
 class UserInfoFragment : BaseFragment<FragmentUserInfoBinding>(FragmentUserInfoBinding::inflate) {
 
     private val viewModel: UserInfoFragmentViewModel by viewModels()
-//    private val userId: Int = 0
 
     override fun setUp() {
         getUserId()
@@ -49,7 +48,6 @@ class UserInfoFragment : BaseFragment<FragmentUserInfoBinding>(FragmentUserInfoB
 
                                 is Resource.Error -> {
                                     // Handle error
-                                    // You can show an error message or navigate back
                                 }
 
                                 is Resource.Loading -> {
@@ -62,7 +60,6 @@ class UserInfoFragment : BaseFragment<FragmentUserInfoBinding>(FragmentUserInfoB
                     }
                 } else {
                     // Handle the case where userId is null
-                    // You can show an error message or navigate back
                 }
             }
         }
