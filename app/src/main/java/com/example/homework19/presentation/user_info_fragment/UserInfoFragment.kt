@@ -1,5 +1,6 @@
 package com.example.homework19.presentation.user_info_fragment
 
+import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -17,15 +18,10 @@ class UserInfoFragment : BaseFragment<FragmentUserInfoBinding>(FragmentUserInfoB
     private val viewModel: UserInfoFragmentViewModel by viewModels()
 
     override fun setUp() {
-        getUserId()
         getUserData()
     }
 
     override fun bindViewActionListener() {
-    }
-
-    private fun getUserId() {
-
     }
 
     private fun getUserData() {
@@ -36,39 +32,42 @@ class UserInfoFragment : BaseFragment<FragmentUserInfoBinding>(FragmentUserInfoB
                 if (userId != null) {
                     viewModel.getUserInfo(userId)
                     viewModel.userInfoState.collect { userResource ->
-                        with(binding) {
-                            when (userResource) {
-                                is Resource.Success -> {
-                                    val user = userResource.data
-                                    email.text = user!!.email
-                                    firstName.text = user.firstName
-                                    lastName.text = user.lastName
-                                    setImageResource(user.avatar)
-                                }
-
-                                is Resource.Error -> {
-                                    // Handle error
-                                }
-
-                                is Resource.Loading -> {
-                                    // Handle loading state if needed
-                                }
-
-                                else -> ""
+                        when (userResource) {
+                            is Resource.Success -> {
+                                val user = userResource.data
+                                setData(user!!.email, user.firstName, user.lastName)
+                                setImageResource(user.avatar)
+                                binding.progressBar.isVisible = false
                             }
+
+                            is Resource.Error -> {
+                                binding.progressBar.isVisible = false
+                            }
+
+                            is Resource.Loading -> {
+                                binding.progressBar.isVisible = userResource.isLoading
+                            }
+
+                            else -> {}
                         }
                     }
-                } else {
-                    // Handle the case where userId is null
+
                 }
             }
         }
     }
 
-
     private fun setImageResource(url: String) {
         Glide.with(this)
             .load(url)
             .into(binding.image)
+    }
+
+    private fun setData(emailInput: String, firstNameInput: String, lastNameInput: String) {
+        with(binding) {
+            email.text = emailInput
+            firstName.text = firstNameInput
+            lastName.text = lastNameInput
+        }
     }
 }

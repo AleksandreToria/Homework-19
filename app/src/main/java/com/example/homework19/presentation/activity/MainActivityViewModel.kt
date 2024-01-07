@@ -3,7 +3,6 @@ package com.example.homework19.presentation.activity
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -15,7 +14,6 @@ class MainActivityViewModel @Inject constructor() : ViewModel() {
 
     init {
         viewModelScope.launch {
-            delay(1500)
             _isLoading.value = false
         }
     }

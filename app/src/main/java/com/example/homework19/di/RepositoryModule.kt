@@ -2,13 +2,13 @@ package com.example.homework19.di
 
 import com.example.homework19.data.common.HandleResponse
 import com.example.homework19.data.repository.UserRepositoryImpl
-import com.example.homework19.data.service.UserInfoService
-import com.example.homework19.data.service.UserListService
-import com.example.homework19.domain.user_list.UserRepository
+import com.example.homework19.data.service.UserService
+import com.example.homework19.domain.user.UserRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import javax.inject.Named
 import javax.inject.Singleton
 
 @Module
@@ -18,19 +18,11 @@ object RepositoryModule {
     @Singleton
     @Provides
     fun provideUserListRepository(
-        userListService: UserListService,
-        userInfoService: UserInfoService,
+        @Named("provideUserListService") userService: UserService,
+        @Named("provideUserInfoService") userInfoService: UserService,
         handleResponse: HandleResponse
     ): UserRepository {
-        return UserRepositoryImpl(userListService, handleResponse, userInfoService)
+        return UserRepositoryImpl(userService, userInfoService, handleResponse)
     }
-
-//    @Singleton
-//    @Provides
-//    fun provideUserInfoRepository(
-//        userInfoService: UserInfoService,
-//        handleResponse: HandleResponse
-//    ): UserInfoRepository {
-//        return UserInfoRepositoryImpl(userInfoService, handleResponse)
-//    }
 }
+

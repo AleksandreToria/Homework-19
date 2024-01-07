@@ -1,5 +1,6 @@
 package com.example.homework19.presentation.main_fragment
 
+import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -18,28 +19,39 @@ class MainFragment : BaseFragment<FragmentMainBinding>(FragmentMainBinding::infl
     private val viewModel: MainFragmentViewModel by viewModels()
     private val adapter = MainFragmentRecyclerAdapter()
 
+    override fun setUp() {
+        setUpRecyclerView()
+        dataCollect()
+    }
+
     override fun bindViewActionListener() {
+        listeners()
+    }
+
+    private fun dataCollect() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.saveData.collect { resource ->
-                    val data = when (resource) {
-                        is Resource.Success -> resource.data
+                    when (resource) {
+                        is Resource.Success -> {
+                            val data = resource.data
+                            binding.progressBar.isVisible = false
+                            adapter.submitList(data)
+                        }
+
                         is Resource.Error -> {
-                            emptyList()
+                            binding.progressBar.isVisible = false
                         }
 
                         is Resource.Loading -> {
-                            emptyList()
+                            binding.progressBar.isVisible = resource.isLoading
                         }
 
-                        else -> emptyList()
+                        else -> {}
                     }
-                    adapter.submitList(data)
                 }
             }
         }
-
-        listeners()
     }
 
     private fun listeners() {
@@ -48,10 +60,6 @@ class MainFragment : BaseFragment<FragmentMainBinding>(FragmentMainBinding::infl
                 MainFragmentDirections.actionMainFragmentToUserInfoFragment(userId = userList.id)
             findNavController().navigate(action)
         }
-    }
-
-    override fun setUp() {
-        setUpRecyclerView()
     }
 
     private fun setUpRecyclerView() {

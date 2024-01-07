@@ -1,4 +1,4 @@
-package com.example.homework19.domain.user_list
+package com.example.homework19.domain.model
 
 data class UserList(
     val id: Int,

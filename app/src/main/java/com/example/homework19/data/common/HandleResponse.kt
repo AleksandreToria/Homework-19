@@ -19,9 +19,10 @@ class HandleResponse @Inject constructor() {
             val errorAdapter: JsonAdapter<String> = moshi.adapter(String::class.java)
 
             try {
+                emit(Resource.Loading(true))
                 val response: Response<T> = apiCall()
 
-                if (response.isSuccessful) {
+                if (response.isSuccessful && response.body() != null) {
                     emit(Resource.Success(response.body()!!))
                 } else {
                     val serverErrorData = response.errorBody()?.string()
@@ -36,6 +37,7 @@ class HandleResponse @Inject constructor() {
             } catch (e: Exception) {
                 emit(Resource.Error("An unexpected error occurred: $e"))
             }
+            emit(Resource.Loading(false))
         }
 }
 

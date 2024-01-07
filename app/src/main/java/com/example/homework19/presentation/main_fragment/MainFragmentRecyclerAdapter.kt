@@ -7,7 +7,7 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.homework19.databinding.ItemLayoutBinding
-import com.example.homework19.domain.user_list.UserList
+import com.example.homework19.domain.model.UserList
 
 class MainFragmentRecyclerAdapter() :
     ListAdapter<UserList, MainFragmentRecyclerAdapter.UserListViewHolder>(DiffCallBack()) {

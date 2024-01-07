@@ -1,7 +1,9 @@
 package com.example.homework19.di
 
-import com.example.homework19.data.service.UserInfoService
-import com.example.homework19.data.service.UserListService
+import com.example.homework19.data.service.UserService
+import com.example.homework19.domain.use_case.GetUserInfoUseCase
+import com.example.homework19.domain.use_case.GetUsersUseCase
+import com.example.homework19.domain.user.UserRepository
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import dagger.Module
@@ -45,14 +47,28 @@ object AppModel {
 
     @Singleton
     @Provides
-    fun provideUserListService(@Named("userList") retrofit: Retrofit): UserListService {
-        return retrofit.create(UserListService::class.java)
+    @Named("provideUserListService")
+    fun provideUserListService(@Named("userList") retrofit: Retrofit): UserService {
+        return retrofit.create(UserService::class.java)
     }
 
+    @Named("provideUserInfoService")
     @Singleton
     @Provides
-    fun provideUserInfoService(@Named("userInfo") retrofit: Retrofit): UserInfoService {
-        return retrofit.create(UserInfoService::class.java)
+    fun provideUserInfoService(@Named("userInfo") retrofit: Retrofit): UserService {
+        return retrofit.create(UserService::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideGetUsersUseCase(userRepository: UserRepository): GetUsersUseCase {
+        return GetUsersUseCase(userRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideGetUserInfoUseCase(userRepository: UserRepository): GetUserInfoUseCase {
+        return GetUserInfoUseCase(userRepository)
     }
 }
 
