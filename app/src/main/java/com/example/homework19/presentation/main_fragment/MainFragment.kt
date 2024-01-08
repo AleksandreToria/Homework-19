@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.homework19.data.common.Resource
 import com.example.homework19.databinding.FragmentMainBinding
 import com.example.homework19.presentation.base_fragment.BaseFragment
+import com.example.homework19.presentation.model.SelectableUser
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -22,10 +23,21 @@ class MainFragment : BaseFragment<FragmentMainBinding>(FragmentMainBinding::infl
     override fun setUp() {
         setUpRecyclerView()
         dataCollect()
+        setupRemoveButton()
     }
 
     override fun bindViewActionListener() {
         listeners()
+    }
+
+    private fun setupRemoveButton() {
+        binding.removeButton.setOnClickListener {
+            val selectedItems = adapter.currentList.filter { it.isSelected }
+            selectedItems.forEach { item ->
+                val position = adapter.currentList.indexOf(item)
+                adapter.removeItem(position)
+            }
+        }
     }
 
     private fun dataCollect() {
@@ -34,7 +46,7 @@ class MainFragment : BaseFragment<FragmentMainBinding>(FragmentMainBinding::infl
                 viewModel.saveData.collect { resource ->
                     when (resource) {
                         is Resource.Success -> {
-                            val data = resource.data
+                            val data = resource.data!!.map { user -> SelectableUser(user) }
                             binding.progressBar.isVisible = false
                             adapter.submitList(data)
                         }
@@ -54,11 +66,16 @@ class MainFragment : BaseFragment<FragmentMainBinding>(FragmentMainBinding::infl
         }
     }
 
+
     private fun listeners() {
         adapter.setOnItemClickListener { userList ->
             val action =
                 MainFragmentDirections.actionMainFragmentToUserInfoFragment(userId = userList.id)
             findNavController().navigate(action)
+        }
+
+        adapter.setOnCheckedChangeListener { position, isChecked ->
+            adapter.currentList[position].isSelected = isChecked
         }
     }
 

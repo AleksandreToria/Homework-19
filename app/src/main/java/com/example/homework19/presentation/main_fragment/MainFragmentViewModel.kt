@@ -5,7 +5,6 @@ import androidx.lifecycle.viewModelScope
 import com.example.homework19.data.common.Resource
 import com.example.homework19.domain.model.UserList
 import com.example.homework19.domain.use_case.GetUsersUseCase
-import com.example.homework19.domain.user.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
