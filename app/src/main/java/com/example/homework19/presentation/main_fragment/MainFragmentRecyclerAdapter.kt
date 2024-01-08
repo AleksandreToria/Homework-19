@@ -30,7 +30,6 @@ class MainFragmentRecyclerAdapter() :
         submitList(newList)
     }
 
-
     inner class UserListViewHolder(private val binding: ItemLayoutBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
