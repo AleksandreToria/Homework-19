@@ -24,10 +24,10 @@ class MainFragmentRecyclerAdapter() :
         onItemClick = listener
     }
 
-    fun removeItem(position: Int) {
-        val newList = currentList.toMutableList()
-        newList.removeAt(position)
-        submitList(newList)
+    fun removeItems(selectedItems: List<SelectableUser>) {
+        val updatedList = currentList.toMutableList()
+        updatedList.removeAll(selectedItems)
+        submitList(updatedList.toList())
     }
 
     inner class UserListViewHolder(private val binding: ItemLayoutBinding) :

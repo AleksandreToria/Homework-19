@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.homework19.data.common.Resource
 import com.example.homework19.domain.model.UserList
 import com.example.homework19.domain.use_case.GetUsersUseCase
+import com.example.homework19.presentation.model.SelectableUser
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -32,6 +33,16 @@ class MainFragmentViewModel @Inject constructor(
                 }
             } catch (e: Exception) {
                 throw e
+            }
+        }
+    }
+
+    fun removeSelectedItems(selectedItems: List<SelectableUser>) {
+        _saveData.value?.let { resource ->
+            if (resource is Resource.Success) {
+                val updatedList = resource.data?.map { SelectableUser(it) }?.toMutableList()
+                updatedList?.removeAll(selectedItems)
+                _saveData.value = Resource.Success(updatedList?.map { it.user } ?: emptyList())
             }
         }
     }

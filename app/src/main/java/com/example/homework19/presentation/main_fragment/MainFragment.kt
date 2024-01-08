@@ -33,10 +33,8 @@ class MainFragment : BaseFragment<FragmentMainBinding>(FragmentMainBinding::infl
     private fun setupRemoveButton() {
         binding.removeButton.setOnClickListener {
             val selectedItems = adapter.currentList.filter { it.isSelected }
-            selectedItems.forEach { item ->
-                val position = adapter.currentList.indexOf(item)
-                adapter.removeItem(position)
-            }
+            adapter.removeItems(selectedItems)
+            viewModel.removeSelectedItems(selectedItems)
         }
     }
 
@@ -65,7 +63,6 @@ class MainFragment : BaseFragment<FragmentMainBinding>(FragmentMainBinding::infl
             }
         }
     }
-
 
     private fun listeners() {
         adapter.setOnItemClickListener { userList ->
