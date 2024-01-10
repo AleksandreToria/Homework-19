@@ -1,8 +1,8 @@
 package com.example.homework19.presentation.model
 
-import com.example.homework19.domain.model.UserList
+import com.example.homework19.domain.model.GetUser
 
 data class SelectableUser(
-    val user: UserList,
+    val user: GetUser,
     var isSelected: Boolean = false
 )

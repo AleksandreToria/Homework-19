@@ -1,4 +1,4 @@
-package com.example.homework19.presentation.main_fragment
+package com.example.homework19.presentation.user_list_fragment
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -7,27 +7,34 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.homework19.databinding.ItemLayoutBinding
-import com.example.homework19.domain.model.UserList
+import com.example.homework19.domain.model.GetUser
 import com.example.homework19.presentation.model.SelectableUser
 
-class MainFragmentRecyclerAdapter() :
-    ListAdapter<SelectableUser, MainFragmentRecyclerAdapter.UserListViewHolder>(DiffCallBack()) {
+class UserListRecyclerAdapter :
+    ListAdapter<SelectableUser, UserListRecyclerAdapter.UserListViewHolder>(DiffCallBack()) {
 
-    private var onItemClick: ((UserList) -> Unit)? = null
+    private var onItemClick: ((GetUser) -> Unit)? = null
     private var onCheckedChangeListener: ((Int, Boolean) -> Unit)? = null
+    private var onRemoveItemsListener: ((List<SelectableUser>) -> Unit)? = null
+
 
     fun setOnCheckedChangeListener(listener: (position: Int, isChecked: Boolean) -> Unit) {
         onCheckedChangeListener = listener
     }
 
-    fun setOnItemClickListener(listener: (UserList) -> Unit) {
-        onItemClick = listener
+    fun setOnItemClickListener(listener: (GetUser) -> Unit) {
+        this.onItemClick = listener
+    }
+
+    fun setRemoveItemsListener(listener: (List<SelectableUser>) -> Unit) {
+        onRemoveItemsListener = listener
     }
 
     fun removeItems(selectedItems: List<SelectableUser>) {
         val updatedList = currentList.toMutableList()
         updatedList.removeAll(selectedItems)
         submitList(updatedList.toList())
+        onRemoveItemsListener?.invoke(selectedItems)
     }
 
     inner class UserListViewHolder(private val binding: ItemLayoutBinding) :

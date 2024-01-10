@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".presentation.main_fragment.MainFragment">
+    tools:context=".presentation.user_list_fragment.UserListFragment">
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/title"

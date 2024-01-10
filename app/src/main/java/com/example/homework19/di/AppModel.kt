@@ -1,9 +1,9 @@
 package com.example.homework19.di
 
 import com.example.homework19.data.service.UserService
+import com.example.homework19.domain.repository.UserRepository
 import com.example.homework19.domain.use_case.GetUserInfoUseCase
 import com.example.homework19.domain.use_case.GetUsersUseCase
-import com.example.homework19.domain.user.UserRepository
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import dagger.Module
@@ -19,7 +19,7 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object AppModel {
     private const val BASE_URL_USER_LIST = "https://run.mocky.io/v3/"
-    private const val BASE_URL_USER_INFO = "https://reqres.in/api/"
+    private const val BASE_URL_USER = "https://reqres.in/api/"
 
     private val moshi = Moshi.Builder()
         .add(KotlinJsonAdapterFactory())
@@ -37,10 +37,10 @@ object AppModel {
 
     @Singleton
     @Provides
-    @Named("userInfo")
+    @Named("user")
     fun provideRetrofitUserInfo(): Retrofit {
         return Retrofit.Builder()
-            .baseUrl(BASE_URL_USER_INFO)
+            .baseUrl(BASE_URL_USER)
             .addConverterFactory(MoshiConverterFactory.create(moshi))
             .build()
     }
@@ -55,7 +55,14 @@ object AppModel {
     @Named("provideUserInfoService")
     @Singleton
     @Provides
-    fun provideUserInfoService(@Named("userInfo") retrofit: Retrofit): UserService {
+    fun provideUserInfoService(@Named("user") retrofit: Retrofit): UserService {
+        return retrofit.create(UserService::class.java)
+    }
+
+    @Named("provideDeleteUser")
+    @Singleton
+    @Provides
+    fun provideDeleteUserService(@Named("user") retrofit: Retrofit): UserService {
         return retrofit.create(UserService::class.java)
     }
 

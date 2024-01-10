@@ -1,4 +1,4 @@
-package com.example.homework19.presentation.base_fragment
+package com.example.homework19.presentation.common
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -26,6 +26,7 @@ abstract class BaseFragment<VB : ViewBinding>(private val inflate: Inflater<VB>)
         super.onViewCreated(view, savedInstanceState)
         setUp()
         bindViewActionListener()
+        bindObservers()
     }
 
     override fun onDestroy() {
@@ -35,4 +36,7 @@ abstract class BaseFragment<VB : ViewBinding>(private val inflate: Inflater<VB>)
 
     abstract fun bindViewActionListener()
     abstract fun setUp()
+    open fun bindObservers() {
+
+    }
 }

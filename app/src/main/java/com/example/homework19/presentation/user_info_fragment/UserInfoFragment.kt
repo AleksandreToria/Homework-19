@@ -8,7 +8,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import com.bumptech.glide.Glide
 import com.example.homework19.data.common.Resource
 import com.example.homework19.databinding.FragmentUserInfoBinding
-import com.example.homework19.presentation.base_fragment.BaseFragment
+import com.example.homework19.presentation.common.BaseFragment
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -35,7 +35,7 @@ class UserInfoFragment : BaseFragment<FragmentUserInfoBinding>(FragmentUserInfoB
                         when (userResource) {
                             is Resource.Success -> {
                                 val user = userResource.data
-                                setData(user!!.email, user.firstName, user.lastName)
+                                setData(user.email, user.firstName, user.lastName)
                                 setImageResource(user.avatar)
                                 binding.progressBar.isVisible = false
                             }
