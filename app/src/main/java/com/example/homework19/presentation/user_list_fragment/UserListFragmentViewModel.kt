@@ -1,6 +1,5 @@
 package com.example.homework19.presentation.user_list_fragment
 
-import android.util.Log.d
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.homework19.data.common.Resource
@@ -25,8 +24,8 @@ class UserListFragmentViewModel @Inject constructor(
     private val _saveData = MutableStateFlow<Resource<List<GetUser>>?>(null)
     val saveData: StateFlow<Resource<List<GetUser>>?> = _saveData.asStateFlow()
 
-    private val _navigationFlow = MutableSharedFlow<NavigationEvent>()
-    val navigationFlow: SharedFlow<NavigationEvent> = _navigationFlow.asSharedFlow()
+    private val _navigationEvent = MutableSharedFlow<NavigationEvent>()
+    val navigationFlow: SharedFlow<NavigationEvent> = _navigationEvent.asSharedFlow()
 
     private val _userEvents = MutableSharedFlow<UserListFragmentEvents>()
     val userEvents: SharedFlow<UserListFragmentEvents> = _userEvents.asSharedFlow()
@@ -61,7 +60,7 @@ class UserListFragmentViewModel @Inject constructor(
                 if (resource is Resource.Success) {
                     val updatedList = resource.data.map { SelectableUser(it) }.toMutableList()
                     updatedList.removeAll(selectedItems)
-                    _saveData.value = Resource.Success(updatedList.map { it.user } ?: emptyList())
+                    _saveData.value = Resource.Success(updatedList.map { it.user } )
                 }
             }
         }
@@ -69,21 +68,21 @@ class UserListFragmentViewModel @Inject constructor(
 
     private fun navigateUserToDetails(id: Int) {
         viewModelScope.launch {
-            _navigationFlow.emit(NavigationEvent.NavigationToDetails(id))
+            _navigationEvent.emit(NavigationEvent.NavigationToDetails(id))
         }
     }
 
     private fun selectUser(id: Int, isSelected: Boolean) {
         viewModelScope.launch {
-            val currentResource = _saveData.value
-
-            if (currentResource is Resource.Success) {
-                val updatedList = currentResource.data.toMutableList()
-                val index = updatedList.indexOfFirst { user -> user.id == id }
-                if (index != -1) {
-                    updatedList[index] = updatedList[index].copy(isSelected = isSelected)
-                    _saveData.value = Resource.Success(updatedList)
-                    _userEvents.emit(UserListFragmentEvents.SelectUserEvent(id, isSelected))
+            getUsersUseCase.invoke().collect { resource ->
+                if (resource is Resource.Success) {
+                    val updatedList = resource.data.toMutableList()
+                    val index = updatedList.indexOfFirst { user -> user.id == id }
+                    if (index != -1) {
+                        updatedList[index] = updatedList[index].copy(isSelected = isSelected)
+                        _saveData.value = Resource.Success(updatedList)
+                        _userEvents.emit(UserListFragmentEvents.SelectUserEvent(id, isSelected))
+                    }
                 }
             }
         }
