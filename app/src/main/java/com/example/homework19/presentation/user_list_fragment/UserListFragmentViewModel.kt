@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -30,6 +31,10 @@ class UserListFragmentViewModel @Inject constructor(
     private val _userEvents = MutableSharedFlow<UserListFragmentEvents>()
     val userEvents: SharedFlow<UserListFragmentEvents> = _userEvents.asSharedFlow()
 
+    private val selectedUsers = mutableSetOf<Int>()
+
+    private var currentUsers: List<GetUser> = emptyList()
+
     init {
         fetchData()
     }
@@ -38,6 +43,13 @@ class UserListFragmentViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 getUsersUseCase.invoke().collect {
+                    when (it) {
+                        is Resource.Success -> {
+                            currentUsers = it.data
+                        }
+
+                        else -> {}
+                    }
                     _saveData.value = it
                 }
             } catch (e: Exception) {
@@ -50,18 +62,25 @@ class UserListFragmentViewModel @Inject constructor(
         when (event) {
             is UserListFragmentEvents.NavigationEvent -> navigateUserToDetails(event.id)
             is UserListFragmentEvents.SelectUserEvent -> selectUser(event.id, event.isSelected)
-            is UserListFragmentEvents.DeleteUserEvent -> deleteUser(event.ids)
+            is UserListFragmentEvents.DeleteUserEvent -> deleteUser()
         }
     }
 
-    private fun deleteUser(selectedItems: List<SelectableUser>) {
+    private fun deleteUser() {
         viewModelScope.launch {
-            _saveData.value?.let { resource ->
-                if (resource is Resource.Success) {
-                    val updatedList = resource.data.map { SelectableUser(it) }.toMutableList()
-                    updatedList.removeAll(selectedItems)
-                    _saveData.value = Resource.Success(updatedList.map { it.user } )
-                }
+            val updatedList = currentUsers.filterNot { user -> selectedUsers.contains(user.id) }
+            currentUsers = updatedList
+            _saveData.value = Resource.Success(updatedList)
+            selectedUsers.clear()
+        }
+    }
+
+    private fun selectUser(id: Int, isSelected: Boolean) {
+        viewModelScope.launch {
+            if (isSelected) {
+                selectedUsers.add(id)
+            } else {
+                selectedUsers.remove(id)
             }
         }
     }
@@ -69,22 +88,6 @@ class UserListFragmentViewModel @Inject constructor(
     private fun navigateUserToDetails(id: Int) {
         viewModelScope.launch {
             _navigationEvent.emit(NavigationEvent.NavigationToDetails(id))
-        }
-    }
-
-    private fun selectUser(id: Int, isSelected: Boolean) {
-        viewModelScope.launch {
-            getUsersUseCase.invoke().collect { resource ->
-                if (resource is Resource.Success) {
-                    val updatedList = resource.data.toMutableList()
-                    val index = updatedList.indexOfFirst { user -> user.id == id }
-                    if (index != -1) {
-                        updatedList[index] = updatedList[index].copy(isSelected = isSelected)
-                        _saveData.value = Resource.Success(updatedList)
-                        _userEvents.emit(UserListFragmentEvents.SelectUserEvent(id, isSelected))
-                    }
-                }
-            }
         }
     }
 }
@@ -95,6 +98,6 @@ sealed class NavigationEvent {
 
 sealed class UserListFragmentEvents {
     data class SelectUserEvent(val id: Int, val isSelected: Boolean) : UserListFragmentEvents()
-    data class DeleteUserEvent(val ids: List<SelectableUser>) : UserListFragmentEvents()
+    data object DeleteUserEvent : UserListFragmentEvents()
     data class NavigationEvent(val id: Int) : UserListFragmentEvents()
 }

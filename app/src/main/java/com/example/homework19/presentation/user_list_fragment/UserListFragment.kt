@@ -45,12 +45,10 @@ class UserListFragment : BaseFragment<FragmentUserListBinding>(FragmentUserListB
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.userEvents.collect { event ->
                     when (event) {
-                        is UserListFragmentEvents.DeleteUserEvent -> handleUserRemove(event.ids)
                         is UserListFragmentEvents.SelectUserEvent -> handleUserSelect(
                             event.id,
                             event.isSelected
                         )
-
                         else -> {}
                     }
                 }
@@ -60,8 +58,7 @@ class UserListFragment : BaseFragment<FragmentUserListBinding>(FragmentUserListB
 
     private fun setupRemoveButton() {
         binding.removeButton.setOnClickListener {
-            val selectedItems = adapter.currentList.filter { it.isSelected }
-            handleUserRemove(selectedItems)
+            viewModel.onEvent(UserListFragmentEvents.DeleteUserEvent)
         }
     }
 
@@ -101,10 +98,11 @@ class UserListFragment : BaseFragment<FragmentUserListBinding>(FragmentUserListB
             viewModel.onEvent(UserListFragmentEvents.SelectUserEvent(user.id, isChecked))
         }
 
-        adapter.setRemoveItemsListener { selectedItems ->
-            viewModel.onEvent(UserListFragmentEvents.DeleteUserEvent(selectedItems))
+        adapter.setRemoveItemsListener {
+            viewModel.onEvent(UserListFragmentEvents.DeleteUserEvent)
         }
     }
+
 
     private fun handleUserSelect(id: Int, isSelected: Boolean) {
         viewModel.onEvent(UserListFragmentEvents.SelectUserEvent(id, isSelected))
@@ -121,7 +119,7 @@ class UserListFragment : BaseFragment<FragmentUserListBinding>(FragmentUserListB
     }
 
     private fun handleUserRemove(selectedItems: List<SelectableUser>) {
-        viewModel.onEvent(UserListFragmentEvents.DeleteUserEvent(selectedItems))
+        viewModel.onEvent(UserListFragmentEvents.DeleteUserEvent)
         adapter.removeItems(selectedItems)
     }
 
@@ -139,4 +137,3 @@ class UserListFragment : BaseFragment<FragmentUserListBinding>(FragmentUserListB
         }
     }
 }
-
