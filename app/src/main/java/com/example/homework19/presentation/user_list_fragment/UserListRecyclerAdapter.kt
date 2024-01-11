@@ -15,8 +15,6 @@ class UserListRecyclerAdapter :
 
     private var onItemClick: ((GetUser) -> Unit)? = null
     private var onCheckedChangeListener: ((Int, Boolean) -> Unit)? = null
-    private var onRemoveItemsListener: ((List<SelectableUser>) -> Unit)? = null
-
 
     fun setOnCheckedChangeListener(listener: (position: Int, isChecked: Boolean) -> Unit) {
         onCheckedChangeListener = listener
@@ -24,17 +22,6 @@ class UserListRecyclerAdapter :
 
     fun setOnItemClickListener(listener: (GetUser) -> Unit) {
         this.onItemClick = listener
-    }
-
-    fun setRemoveItemsListener(listener: (List<SelectableUser>) -> Unit) {
-        onRemoveItemsListener = listener
-    }
-
-    fun removeItems(selectedItems: List<SelectableUser>) {
-        val updatedList = currentList.toMutableList()
-        updatedList.removeAll(selectedItems)
-        submitList(updatedList.toList())
-        onRemoveItemsListener?.invoke(selectedItems)
     }
 
     inner class UserListViewHolder(private val binding: ItemLayoutBinding) :
